@@ -1033,7 +1033,7 @@ wheels = [
 
 [[package]]
 name = "shpsg-parser"
-version = "0.7.0"
+version = "0.7.1"
 source = { virtual = "." }
 dependencies = [
     { name = "beautifulsoup4" },
