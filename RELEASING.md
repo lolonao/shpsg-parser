@@ -37,7 +37,7 @@
     ```
 
 5.  **自動リリース:**
-    タグをプッシュすると、[Create GitHub Release](https://github.com/lolonao/shpsg-parser/actions/workflows/create-release.yml) ワークフローが自動的にトリガーされます。このワークフローは以下の処理を行います:
+    **タグをプッシュすると**、[Create GitHub Release](https://github.com/lolonao/shpsg-parser/actions/workflows/create-release.yml) ワークフローが自動的にトリガーされます。**注意：コミットをプッシュしただけでは起動しません。必ず `git push origin <タグ名>` を実行してください。** このワークフローは以下の処理を行います:
     *   パッケージをビルドします。
     *   新しいGitHubリリースを作成します。
     *   ビルドされた `.whl` と `.tar.gz` ファイルをリリースのアセットとして添付します。
