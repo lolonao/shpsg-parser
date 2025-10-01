@@ -1,0 +1,36 @@
+[project]
+name = "shpsg-parser"
+version = "0.5.0"
+description = "Shopeeシンガポールの商品一覧、商品詳細ページをローカルに保存したHMLファイルを解析するPythonライブラリ"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4>=4.13.5",
+    "lxml>=6.0.1",
+    "pydantic>=2.11.7",
+    "pyyaml>=6.0.2",
+    "requests>=2.32.5",
+    "streamlit>=1.49.1",
+    "typer>=0.17.4",
+    "types-requests>=2.32.4.20250809",
+    "pandas>=2.2.0",
+    "extruct>=0.17.0",
+]
+
+[project.scripts]
+shpsg-parser = "shpsg_parser.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.405",
+    "pytest>=8.4.2",
+    "ruff>=0.13.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
