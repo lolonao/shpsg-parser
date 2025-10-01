@@ -1,0 +1,40 @@
+
+name: Create GitHub Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*' # vX.Y.Z という形式のタグがプッシュされたら起動
+
+jobs:
+  release:
+    name: Create Release and Upload Assets
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # リリースを作成するために、リポジトリへの書き込み権限が必要
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv and build tool
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          uv pip install build
+
+      - name: Build package
+        run: python -m build
+
+      - name: Create GitHub Release and Upload Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          # dist/ ディレクトリにあるすべてのファイルをアセットとしてアップロード
+          files: dist/*
+        env:
+          # 認証は、自動で提供されるこのトークンを使うから安全よ
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
