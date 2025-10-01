@@ -1,3 +1,4 @@
+
 # 新しいバージョンのリリース手順
 
 このプロジェクトでは、リリースプロセスを自動化するためにGitHub Actionsを使用しています。新しいバージョンタグをリポジトリにプッシュすることで、新しいリリースが作成されます。
@@ -49,3 +50,38 @@
 ```bash
 uv pip install git+https://<YOUR_PAT_HERE>@github.com/lolonao/shpsg-parser.git@<TAG_NAME>
 ```
+
+---
+
+## パッケージの利用方法（更新と依存関係の記録）
+
+リリースしたパッケージを他のプロジェクト（例: `packagedemo`）で利用する方法です。
+
+### 新しいバージョンへの更新
+
+新しいバージョンがリリースされたら、利用側のプロジェクトで以下のコマンドを実行してパッケージを更新します。
+
+`@<TAG_NAME>` の部分を、新しいバージョンタグ（例: `@v0.7.2`）に置き換えてください。
+
+```bash
+uv pip install --upgrade git+https://<YOUR_PAT_HERE>@github.com/lolonao/shpsg-parser.git@<TAG_NAME>
+```
+
+### 依存関係を `pyproject.toml` に記録する
+
+`uv pip install` コマンドはパッケージをインストールするだけで、`pyproject.toml` には何も書き込みません。依存関係をプロジェクトに記録するには、手動で `pyproject.toml` を編集する必要があります。
+
+利用側プロジェクトの `pyproject.toml` を開き、`[project.dependencies]` リストに以下のように追記します。
+
+```toml
+[project]
+# ...
+dependencies = [
+    # "@<TAG_NAME>" の部分をインストールしたいバージョンに合わせる
+    "shpsg-parser @ git+https://github.com/lolonao/shpsg-parser.git@v0.7.2"
+]
+```
+
+**【重要】** このファイルに **Personal Access Token (PAT) を絶対に含めないでください**。このファイルはGitで管理されるため、秘密情報が漏洩する危険があります。
+
+`pyproject.toml` に依存関係を記録した後は、インストール自体は上記のPAT付きのコマンドで手動実行するのが、最もシンプルで安全な運用です。
