@@ -8,6 +8,9 @@ class ProductBasicItem(BaseModel):
     """
     抽出した商品情報を格納するPydanticモデル
     """
+    product_id: Optional[int] = Field(None, description="商品ID")
+    shop_id: Optional[int] = Field(None, description="ショップID")
+    shop_name: Optional[str] = Field(None, description="ショップ名")
     product_name: str = Field(..., description="商品名")
     price: float = Field(..., description="価格")
     sold: int = Field(..., description="販売数")

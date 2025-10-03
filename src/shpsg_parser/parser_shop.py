@@ -3,6 +3,7 @@
 """
 from typing import List
 import re
+from urllib.parse import urlparse
 from bs4 import BeautifulSoup, Tag
 from pydantic import ValidationError
 
@@ -14,6 +15,8 @@ from .parser_base import (
     extract_price,
     extract_sold,
     extract_rating,
+    extract_ids_from_url,
+    extract_shop_name_from_url,
 )
 
 
@@ -38,6 +41,11 @@ def _parse_shop_page(soup: BeautifulSoup) -> List[ProductBasicItem]:
     # ショップページの商品コンテナセレクタ
     item_containers = soup.select('div.shop-search-result-view__item')
 
+    # canonical URLからショップ名を取得
+    canonical_link = soup.find("link", {"rel": "canonical"})
+    shop_url = canonical_link['href'] if canonical_link and canonical_link.has_attr('href') else ''
+    shop_name = extract_shop_name_from_url(shop_url)
+
     # ショップの配送国はページ全体で共通の可能性が高いため、最初に一度だけ取得する
     location = None
     location_div = soup.select_one('div.shop-page-shop-description > span')
@@ -53,6 +61,7 @@ def _parse_shop_page(soup: BeautifulSoup) -> List[ProductBasicItem]:
             if not a_tag:
                 continue
             product_url = to_absolute_url(a_tag['href'])
+            shop_id, product_id = extract_ids_from_url(product_url)
 
             name_div = a_tag.select_one('div.line-clamp-2')
             name = name_div.get_text(strip=True) if name_div else ''
@@ -81,6 +90,9 @@ def _parse_shop_page(soup: BeautifulSoup) -> List[ProductBasicItem]:
                 sold = extract_sold(sold_div.text)
 
             product_data = {
+                "product_id": product_id,
+                "shop_id": shop_id,
+                "shop_name": shop_name,
                 "product_name": name,
                 "product_url": product_url,
                 "price": price,

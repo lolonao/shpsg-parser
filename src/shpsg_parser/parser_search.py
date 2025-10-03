@@ -14,6 +14,7 @@ from .parser_base import (
     extract_price,
     extract_sold,
     extract_rating,
+    extract_ids_from_url,
 )
 
 def parse_from_file(filepath: str) -> List[ProductBasicItem]:
@@ -48,6 +49,8 @@ def _parse_search_page_by_scraping(soup: BeautifulSoup) -> List[ProductBasicItem
 
             a_tag = container.find('a', href=True)
             product_url = to_absolute_url(a_tag['href']) if a_tag else ''
+
+            shop_id, product_id = extract_ids_from_url(product_url)
 
             img_tag = container.select_one('img[src]')
             image_url = to_absolute_image_url(img_tag['src']) if img_tag and img_tag.has_attr('src') else ''
@@ -100,6 +103,8 @@ def _parse_search_page_by_scraping(soup: BeautifulSoup) -> List[ProductBasicItem
                         location = location_span.get_text(strip=True)
 
             product_data = {
+                "product_id": product_id,
+                "shop_id": shop_id,
                 "product_name": name,
                 "product_url": product_url,
                 "price": price,
