@@ -42,6 +42,7 @@ def _parse_shop_page(soup: BeautifulSoup) -> List[ProductBasicItem]:
     item_containers = soup.select('div.shop-search-result-view__item')
 
     # canonical URLからショップ名を取得
+    # ショップページでは、canonical linkにショップのURLが含まれているため、これを解析してショップ名を取得する
     canonical_link = soup.find("link", {"rel": "canonical"})
     shop_url = canonical_link['href'] if canonical_link and canonical_link.has_attr('href') else ''
     shop_name = extract_shop_name_from_url(shop_url)
