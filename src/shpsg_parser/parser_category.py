@@ -15,6 +15,7 @@ from .parser_base import (
     extract_price,
     extract_sold,
     extract_rating,
+    extract_ids_from_url,
 )
 
 
@@ -80,9 +81,14 @@ def _parse_item_page(soup: BeautifulSoup) -> List[ProductBasicItem]:
         sold_count_text_elem = soup.select_one("div.aleSBU")
         sold = extract_sold(sold_count_text_elem.text) if sold_count_text_elem else 0
 
+        product_url = to_absolute_url(product_json_ld.get("url", ""))
+        shop_id, product_id = extract_ids_from_url(product_url)
+
         product_data = {
+            "product_id": product_id,
+            "shop_id": shop_id,
             "product_name": name,
-            "product_url": to_absolute_url(product_json_ld.get("url", "")),
+            "product_url": product_url,
             "price": price,
             "currency": currency,
             "image_url": to_absolute_image_url(product_json_ld.get("image", "")),
@@ -113,6 +119,7 @@ def _parse_category_page(
 
             a_tag = container.find("a", href=True)
             product_url = to_absolute_url(a_tag["href"]) if a_tag else ""
+            shop_id, product_id = extract_ids_from_url(product_url)
 
             img_tag = container.find("img", alt=True)
             image_url = to_absolute_image_url(img_tag["src"]) if img_tag and img_tag.has_attr("src") else ""
@@ -167,6 +174,8 @@ def _parse_category_page(
             # --- ▲▲▲ここまでが最終修正箇所▲▲▲ ---
 
             product_data = {
+                "product_id": product_id,
+                "shop_id": shop_id,
                 "product_name": name,
                 "product_url": product_url,
                 "price": price,

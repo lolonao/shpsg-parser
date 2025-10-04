@@ -4,7 +4,7 @@
 import re
 import os
 from urllib.parse import urljoin
-from typing import Optional
+from typing import Optional, Tuple
 
 BASE_URL = "https://shopee.sg"
 
@@ -95,4 +95,44 @@ def extract_rating(rating_str: Optional[str]) -> Optional[float]:
             # 変換に失敗した場合はNoneを返す
             return None
 
+    return None
+
+def extract_ids_from_url(url: str) -> Tuple[Optional[int], Optional[int]]:
+    """
+    URLからショップIDと商品IDを抽出する。
+    URLの形式が 'i.ショップID.商品ID' であることを期待する。
+    """
+    if not url:
+        return None, None
+
+    # URLを'.'で分割し、末尾の2つの部分がIDであると仮定する
+    parts = url.split('.')
+    # URLの末尾が 'i.ショップID.商品ID' の形式になっているか確認
+    if len(parts) >= 3 and parts[-2].isdigit() and parts[-1].isdigit():
+        try:
+            shop_id = int(parts[-2])
+            product_id = int(parts[-1])
+            return shop_id, product_id
+        except ValueError:
+            # 数値変換に失敗した場合はNoneを返す
+            return None, None
+    return None, None
+
+def extract_shop_name_from_url(url: str) -> Optional[str]:
+    """
+    ショップURLからショップ名を抽出する
+    例: https://shopee.sg/japanstationery.sg -> japanstationery.sg
+    """
+    if not url:
+        return None
+    try:
+        # URLのパス部分の末尾（ファイル名やショップ名に相当する部分）を取得
+        path = urljoin(url, ".").split("/")[-1]
+        # クエリパラメータ（?以降）を除去して、ショップ名のみを抽出
+        shop_name = path.split("?")[0]
+        if shop_name:
+            return shop_name
+    except Exception:
+        # 何らかのエラーが発生した場合はNoneを返す
+        return None
     return None
